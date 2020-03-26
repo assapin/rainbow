@@ -35,6 +35,8 @@ pipelines:
         env_vars:
           env1: "a"
           env2: "b"
+        kubernetes_kwargs:
+          a: "a"
         input_type: static
         input_path: '[ { "foo": "bar" }, { "foo": "baz" } ]'
         output_path: /output.json
@@ -46,6 +48,8 @@ pipelines:
         env_vars:
           env1: "a"
           env2: "b"
+        kubernetes_kwargs:
+          a: "a"
         input_type: static
         input_path: '[ { "foo": "bar" }, { "foo": "baz" } ]'
         split_input: True
@@ -59,6 +63,8 @@ pipelines:
         env_vars:
           env1: "a"
           env2: "b"
+        kubernetes_kwargs:
+          a: "a"
         input_type: task
         input_path: my_static_input_task
         cmd: python -u hello_world.py

@@ -34,7 +34,6 @@ class TestPythonTask(TestCase):
         task_id = 'my_task'
 
         config = self.__create_conf(task_id)
-
         task0 = python.PythonTask(dag, 'my_pipeline', None, config, 'all_success')
         task0.apply_task_to_dag()
 
@@ -53,7 +52,10 @@ class TestPythonTask(TestCase):
             'source': 'baz',
             'input_type': 'my_input_type',
             'input_path': 'my_input',
-            'output_path': '/my_output.json'
+            'output_path': '/my_output.json',
+            'env_vars': {},
+            'kubernetes_kwargs': {'a':'a'}
+
         }
 
 

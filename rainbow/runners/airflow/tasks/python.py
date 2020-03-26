@@ -142,11 +142,22 @@ class PythonTask(task.Task):
         return cmds, arguments
 
     def __kubernetes_kwargs(self):
+        namespace = 'default'
+        in_kubernetes_cluster = False
+        image_pull_policy = 'IfNotPresent'
+        kwargs = self.config.get("kubernetes_kwargs", None)
+        if kwargs:
+            namespace = kwargs.get('kubernetes_namespace', namespace)
+            in_kubernetes_cluster = kwargs.get("in_kubernetes_cluster", in_kubernetes_cluster)
+            image_pull_policy = kwargs.get("image_pull_policy", image_pull_policy)
+
         kubernetes_kwargs = {
-            'namespace': Variable.get('kubernetes_namespace', default_var='default'),
+            'namespace':  namespace if kwargs else Variable.get('kubernetes_namespace', default_var=namespace),
             'name': self.task_name.replace('_', '-'),
-            'in_cluster': Variable.get('in_kubernetes_cluster', default_var=False),
-            'image_pull_policy': Variable.get('image_pull_policy', default_var='IfNotPresent'),
+            'in_cluster': in_kubernetes_cluster if kwargs else Variable.get('in_kubernetes_cluster',
+                                                                            default_var=in_kubernetes_cluster),
+            'image_pull_policy': image_pull_policy if kwargs else Variable.get('image_pull_policy',
+                                                                               default_var=image_pull_policy),
             'get_logs': True,
             'env_vars': self.env_vars,
             'do_xcom_push': True,
@@ -162,14 +173,16 @@ class PythonTask(task.Task):
         env_vars = {}
         if 'env_vars' in self.config:
             env_vars = self.config['env_vars']
-        airflow_configuration_variable = Variable.get(
-            f'''{self.pipeline_name}_dag_configuration''',
-            default_var=None)
-        if airflow_configuration_variable:
-            airflow_configs = json.loads(airflow_configuration_variable)
-            environment_variables_key = f'''{self.pipeline_name}_environment_variables'''
-            if environment_variables_key in airflow_configs:
-                env_vars = airflow_configs[environment_variables_key]
+        #otherwise load from airflow itself
+        else:
+            airflow_configuration_variable = Variable.get(
+                f'''{self.pipeline_name}_dag_configuration''',
+                default_var=None)
+            if airflow_configuration_variable:
+                airflow_configs = json.loads(airflow_configuration_variable)
+                environment_variables_key = f'''{self.pipeline_name}_environment_variables'''
+                if environment_variables_key in airflow_configs:
+                    env_vars = airflow_configs[environment_variables_key]
         return env_vars
 
     def __kubernetes_resources(self):

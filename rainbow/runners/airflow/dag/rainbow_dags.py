@@ -15,7 +15,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
+import os
 from datetime import datetime, timedelta
 
 import yaml
@@ -101,4 +101,4 @@ def get_task_class(task_type):
     return task_classes[task_type]
 
 
-register_dags(Variable.get('rainbows_dir'))
+#register_dags(os.environ.get("rainbow_dir", Variable.get('rainbows_dir')))
