@@ -38,7 +38,7 @@ class JobStatusOperator(BaseOperator):
             *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.backends = backends
-        #self.cloudwatch = CloudWatchHook()
+        self.cloudwatch = CloudWatchHook()
 
     def execute(self, context):
         for backend in self.backends:
